@@ -11,6 +11,8 @@
 	var/should_give_codewords = TRUE
 	var/list/objectives_given = list()
 
+	//restricted_roles = list("Security Officer", "Warden", "Detective", "Head of Security", "Captain")
+
 /datum/antagonist/traitor/create_antagonist_group(var/list/datum/mind/targets)
 	.=..(targets)
 	if(length(targets)>=TRAITORS_REQUIRED_FOR_EXCHANGE)

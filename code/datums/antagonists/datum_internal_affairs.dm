@@ -9,6 +9,8 @@
 	base_datum_custom = ANTAG_DATUM_IAA_CUSTOM
 	human_datum = ANTAG_DATUM_IAA_HUMAN
 	ai_datum = ANTAG_DATUM_IAA_AI
+	minimum_group_size = 2
+	relative_antag_chance = 20
 
 /datum/antagonist/traitor/internal_affairs/create_antagonist_group(var/list/datum/mind/targets)
 	var/counter = 1

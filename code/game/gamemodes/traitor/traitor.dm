@@ -2,8 +2,6 @@
 	var/traitor_name = "traitor"
 	var/list/datum/mind/traitors = list()
 
-	var/datum/mind/exchange_red
-	var/datum/mind/exchange_blue
 
 /datum/game_mode/traitor
 	name = "traitor"
@@ -62,8 +60,6 @@
 /datum/game_mode/traitor/post_setup()
 	var/datum/antagonist/A = new antag_datum
 	A.create_antagonist_group(pre_traitors)
-	if(!exchange_blue)
-		exchange_blue = -1 //Block latejoiners from getting exchange objectives
 	modePlayer += traitors
 	..()
 	return 1

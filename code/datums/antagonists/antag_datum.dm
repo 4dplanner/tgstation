@@ -8,6 +8,12 @@
 	var/can_coexist_with_others = TRUE			//Whether or not the person will be able to have more than one datum
 	var/list/typecache_datum_blacklist = list()	//List of datums this type can't coexist with
 	var/delete_on_death = TRUE
+	
+	var/antag_cost = TRAITOR_THREAT_LEVEL
+	var/antag_flag = ROLE_TRAITOR
+	var/minimum_group_size = 1
+	var/restricted_roles = list()
+	var/relative_antag_chance = 100
 
 /datum/antagonist/New(datum/mind/new_owner)
 	typecache_datum_blacklist = typecacheof(typecache_datum_blacklist)

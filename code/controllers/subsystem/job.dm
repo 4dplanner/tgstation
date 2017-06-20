@@ -301,13 +301,15 @@ SUBSYSTEM_DEF(job)
 					Debug("DO player not old enough, Player: [player], Job:[job.title]")
 					continue
 
-				if(player.mind && job.title in player.mind.restricted_roles)
-					Debug("DO incompatible with antagonist role, Player: [player], Job:[job.title]")
-					continue
+				if(player.mind)
+					if(job.title in player.mind.restricted_roles)
+						Debug("DO incompatible with antagonist role, Player: [player], Job:[job.title]")
+						continue
 
 				if(config.enforce_human_authority && !player.client.prefs.pref_species.qualifies_for_rank(job.title, player.client.prefs.features))
 					Debug("DO non-human failed, Player: [player], Job:[job.title]")
 					continue
+	
 
 				// If the player wants that job on this level, then try give it to him.
 				if(player.client.prefs.GetJobDepartment(job, level) & job.flag)
