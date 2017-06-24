@@ -337,7 +337,9 @@
 		set_security_level(SEC_LEVEL_BLUE)
 
 
-/datum/game_mode/proc/get_players_for_role(role)
+/datum/game_mode/proc/get_players_for_role(role, enemy_count, antag_datum)
+	if(!enemy_count)
+		enemy_count = recommended_enemies
 	var/list/players = list()
 	var/list/candidates = list()
 	var/list/drafted = list()
@@ -357,7 +359,8 @@
 			if(role in player.client.prefs.be_special)
 				if(!jobban_isbanned(player, "Syndicate") && !jobban_isbanned(player, role)) //Nodrak/Carn: Antag Job-bans
 					if(age_check(player.client)) //Must be older than the minimum age
-						candidates += player.mind				// Get a list of all the people who want to be the antagonist for this round
+						if(!antag_datum || antag_datum.can_be_owned(player.mind))
+							candidates += player.mind				// Get a list of all the people who want to be the antagonist for this round
 
 	if(restricted_jobs)
 		for(var/datum/mind/player in candidates)
@@ -365,12 +368,13 @@
 				if(player.assigned_role == job)
 					candidates -= player
 
-	if(candidates.len < recommended_enemies)
+	if(candidates.len < enemy_count)
 		for(var/mob/dead/new_player/player in players)
 			if(player.client && player.ready)
 				if(!(role in player.client.prefs.be_special)) // We don't have enough people who want to be antagonist, make a seperate list of people who don't want to be one
 					if(!jobban_isbanned(player, "Syndicate") && !jobban_isbanned(player, role)) //Nodrak/Carn: Antag Job-bans
-						drafted += player.mind
+						if(!antag_datum || antag_datum.can_be_owned(player.mind))
+							drafted += player.mind
 
 	if(restricted_jobs)
 		for(var/datum/mind/player in drafted)				// Remove people who can't be an antagonist
@@ -380,7 +384,7 @@
 
 	drafted = shuffle(drafted) // Will hopefully increase randomness, Donkie
 
-	while(candidates.len < recommended_enemies)				// Pick randomlly just the number of people we need and add them to our list of candidates
+	while(candidates.len < enemy_count)				// Pick randomlly just the number of people we need and add them to our list of candidates
 		if(drafted.len > 0)
 			applicant = pick(drafted)
 			if(applicant)
@@ -390,11 +394,12 @@
 		else												// Not enough scrubs, ABORT ABORT ABORT
 			break
 /*
-	if(candidates.len < recommended_enemies && override_jobbans) //If we still don't have enough people, we're going to start drafting banned people.
+	if(candidates.len < enemy_count && override_jobbans) //If we still don't have enough people, we're going to start drafting banned people.
 		for(var/mob/dead/new_player/player in players)
 			if (player.client && player.ready)
 				if(jobban_isbanned(player, "Syndicate") || jobban_isbanned(player, roletext)) //Nodrak/Carn: Antag Job-bans
-					drafted += player.mind
+					if(!antag_datum || antag_datum.can_be_owned(player.mind))
+						drafted += player.mind
 */
 	if(restricted_jobs)
 		for(var/datum/mind/player in drafted)				// Remove people who can't be an antagonist
@@ -404,7 +409,7 @@
 
 	drafted = shuffle(drafted) // Will hopefully increase randomness, Donkie
 
-	while(candidates.len < recommended_enemies)				// Pick randomlly just the number of people we need and add them to our list of candidates
+	while(candidates.len < enemy_count)				// Pick randomlly just the number of people we need and add them to our list of candidates
 		if(drafted.len > 0)
 			applicant = pick(drafted)
 			if(applicant)
@@ -414,9 +419,9 @@
 		else												// Not enough scrubs, ABORT ABORT ABORT
 			break
 
-	return candidates		// Returns: The number of people who had the antagonist role set to yes, regardless of recomended_enemies, if that number is greater than recommended_enemies
-							//			recommended_enemies if the number of people with that role set to yes is less than recomended_enemies,
-							//			Less if there are not enough valid players in the game entirely to make recommended_enemies.
+	return candidates		// Returns: The number of people who had the antagonist role set to yes, regardless of recomended_enemies, if that number is greater than enemy_count
+							//			enemy_count if the number of people with that role set to yes is less than recomended_enemies,
+							//			Less if there are not enough valid players in the game entirely to make enemy_count.
 
 /*
 /datum/game_mode/proc/check_player_role_pref(var/role, var/mob/dead/new_player/player)

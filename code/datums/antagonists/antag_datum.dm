@@ -38,6 +38,12 @@
 			return FALSE
 		if(is_type_in_typecache(A, typecache_datum_blacklist))
 			return FALSE
+	for(var/i in new_owner.pending_antag_datums)
+		var/datum/antagonist/A = i
+		if(is_type_in_typecache(src, A.typecache_datum_blacklist))
+			return FALSE
+		if(is_type_in_typecache(A, typecache_datum_blacklist))
+			return FALSE
 
 /datum/antagonist/proc/on_body_transfer(mob/living/old_body, mob/living/new_body)
 	remove_innate_effects(old_body)
