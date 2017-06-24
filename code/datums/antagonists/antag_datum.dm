@@ -6,7 +6,8 @@
 	var/silent = FALSE							//Silent will prevent the gain/lose texts to show
 
 	var/can_coexist_with_others = TRUE			//Whether or not the person will be able to have more than one datum
-	var/list/typecache_datum_blacklist = list()	//List of datums this type can't coexist with
+	var/list/typecache_datum_blacklist = list()		//List of datums this type can't coexist with
+	var/list/typecache_datum_shouldnt_coexist = list()	//List of datums this type SHOULDN'T, but can, coexist with - used for gamemode code. Put for ludicrously overpowered combinations.
 	var/delete_on_death = TRUE
 	
 	var/antag_cost = TRAITOR_THREAT_LEVEL
@@ -17,6 +18,7 @@
 
 /datum/antagonist/New(datum/mind/new_owner)
 	typecache_datum_blacklist = typecacheof(typecache_datum_blacklist)
+	typecache_datum_shouldnt_coexist = typecacheof(typecache_datum_shouldnt_coexist)
 	if(new_owner)
 		owner = new_owner
 

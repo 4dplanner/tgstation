@@ -359,7 +359,7 @@
 			if(role in player.client.prefs.be_special)
 				if(!jobban_isbanned(player, "Syndicate") && !jobban_isbanned(player, role)) //Nodrak/Carn: Antag Job-bans
 					if(age_check(player.client)) //Must be older than the minimum age
-						if(!antag_datum || antag_datum.can_be_owned(player.mind))
+						if(antag_datum && antag_datum.should_be_owned(player.mind) && antag_datum.can_be_owned(player.mind))
 							candidates += player.mind				// Get a list of all the people who want to be the antagonist for this round
 
 	if(restricted_jobs)
@@ -373,7 +373,7 @@
 			if(player.client && player.ready)
 				if(!(role in player.client.prefs.be_special)) // We don't have enough people who want to be antagonist, make a seperate list of people who don't want to be one
 					if(!jobban_isbanned(player, "Syndicate") && !jobban_isbanned(player, role)) //Nodrak/Carn: Antag Job-bans
-						if(!antag_datum || antag_datum.can_be_owned(player.mind))
+						if(antag_datum && antag_datum.should_be_owned(player.mind) && antag_datum.can_be_owned(player.mind))
 							drafted += player.mind
 
 	if(restricted_jobs)
@@ -398,7 +398,7 @@
 		for(var/mob/dead/new_player/player in players)
 			if (player.client && player.ready)
 				if(jobban_isbanned(player, "Syndicate") || jobban_isbanned(player, roletext)) //Nodrak/Carn: Antag Job-bans
-					if(!antag_datum || antag_datum.can_be_owned(player.mind))
+					if(antag_datum && antag_datum.should_be_owned(player.mind) && antag_datum.can_be_owned(player.mind))
 						drafted += player.mind
 */
 	if(restricted_jobs)
