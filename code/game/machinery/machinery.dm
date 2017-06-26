@@ -389,7 +389,7 @@ Class Procs:
 		if(!time || do_after(user, time*W.toolspeed, target = src, extra_checks = CALLBACK(src, .proc/unfasten_wrench_check, prev_anchored, user)))
 			to_chat(user, "<span class='notice'>You [anchored ? "un" : ""]secure [src].</span>")
 			anchored = !anchored
-			playsound(loc, 'sound/items/Deconstruct.ogg', 50, 1)
+			playsound(loc, 'sound/items/deconstruct.ogg', 50, 1)
 			return SUCCESSFUL_UNFASTEN
 		return FAILED_UNFASTEN
 	return CANT_UNFASTEN
@@ -495,3 +495,8 @@ Class Procs:
 		emp_act(2)
 	else
 		ex_act(2)
+
+/obj/machinery/Exited(atom/movable/AM, atom/newloc)
+	. = ..()
+	if (AM == occupant)
+		occupant = null

@@ -6,7 +6,7 @@
 	var/ai_datum = ANTAG_DATUM_TRAITOR_AI
 	var/human_datum = ANTAG_DATUM_TRAITOR_HUMAN
 	var/special_role = "traitor"
-	var/employer = "The Syndicate" 
+	var/employer = "The Syndicate"
 	var/give_objectives = TRUE
 	var/should_give_codewords = TRUE
 	var/list/objectives_given = list()
@@ -50,7 +50,7 @@
 	other.silent = silent
 	other.employer = employer
 	other.special_role = special_role
-	other.objectives_given = objectives_given	
+	other.objectives_given = objectives_given
 
 /datum/antagonist/traitor/custom
 	ai_datum = ANTAG_DATUM_TRAITOR_AI_CUSTOM
@@ -71,10 +71,10 @@
 	silent = TRUE
 	should_give_codewords = FALSE
 	give_objectives = FALSE
-	
+
 
 /datum/antagonist/traitor/on_body_transfer(mob/living/old_body, mob/living/new_body)
-	if(istype(new_body,/mob/living/silicon/ai)==istype(old_body,/mob/living/silicon/ai))
+	if(isAI(new_body)==isAI(old_body))
 		..()
 	else
 		owner.add_antag_datum(base_datum_custom)
@@ -85,8 +85,8 @@
 			break
 		silent = TRUE
 		on_removal()
-		
-		
+
+
 
 /datum/antagonist/traitor/human/custom //used to give custom objectives
 	silent = TRUE
@@ -98,7 +98,7 @@
 	should_give_codewords = FALSE
 
 /datum/antagonist/traitor/proc/specialise()
-	if(owner.current&&istype(owner.current,/mob/living/silicon/ai))
+	if(owner.current&&isAI(owner.current))
 		var/datum/antagonist/traitor/A = new ai_datum
 		transfer_important_variables(A)
 		owner.add_preexisting_antag_datum(A)
@@ -108,11 +108,11 @@
 		owner.add_preexisting_antag_datum(A)
 	silent = TRUE
 	on_removal()
-	
+
 /datum/antagonist/traitor/on_gain()
 	if(should_specialise)
 		specialise()
-		return	
+		return
 	SSticker.mode.traitors+=owner
 	owner.special_role = special_role
 	if(give_objectives)
@@ -132,9 +132,9 @@
 		var/mob/living/carbon/human/traitor_mob = owner.current
 		if(traitor_mob&&istype(traitor_mob))
 			traitor_mob.dna.add_mutation(CLOWNMUT)
-			
-/datum/antagonist/traitor/on_removal() 
-	if(should_specialise) 
+
+/datum/antagonist/traitor/on_removal()
+	if(should_specialise)
 		return ..()//we never did any of this anyway
 	SSticker.mode.traitors -= owner
 	for(var/O in objectives_given)
@@ -150,7 +150,7 @@
 		var/mob/living/silicon/ai/A = owner.current
 		A.set_zeroth_law("")
 		A.verbs -= /mob/living/silicon/ai/proc/choose_modules
-		A.malf_picker.remove_verbs(A)
+		A.malf_picker.remove_malf_verbs(A)
 		qdel(A.malf_picker)
 	..()
 
@@ -280,13 +280,14 @@
 /datum/antagonist/traitor/AI/finalize_traitor()
 	..()
 	add_law_zero()
-	owner.current.playsound_local('sound/ambience/antag/Malf.ogg',100,0)
+	owner.current.playsound_local(get_turf(owner.current), 'sound/ambience/antag/malf.ogg', 100, FALSE, pressure_affected = FALSE)
 	owner.current.grant_language(/datum/language/codespeak)
 
 /datum/antagonist/traitor/human/finalize_traitor()
 	..()
-	if(should_equip) equip(silent)
-	owner.current.playsound_local('sound/ambience/antag/TatorAlert.ogg',100,0)
+	if(should_equip)
+		equip(silent)
+	owner.current.playsound_local(get_turf(owner.current), 'sound/ambience/antag/tatoralert.ogg', 100, FALSE, pressure_affected = FALSE)
 
 /datum/antagonist/traitor/proc/give_codewords()
 	if(!owner.current)
