@@ -16,8 +16,8 @@
 	if(CONFIG_GET(flag/protect_assistant_from_antagonist))
 		restricted_jobs += "Assistant"
 
-	var/list/datum/mind/possible_hosts = get_players_for_role(ROLE_WOLF_HOST)
-	var/list/datum/mind/possible_beasts = get_players_for_role(ROLE_WOLF_BEAST)
+	var/list/datum/mind/possible_hosts = get_players_for_role(ROLE_WEREBEAST_HOST)
+	var/list/datum/mind/possible_beasts = get_players_for_role(ROLE_WEREBEAST_BEAST)
 
 	var/num_teams = 2
 
@@ -46,7 +46,7 @@
 
 		for (var/datum/mind/M in list(beast,host))
 			M.restricted_roles = restricted_jobs
-		beast.assigned_role = "WOLF"
+		beast.assigned_role = "Beast"
 
 		var/datum/team/werebeast/team = new
 

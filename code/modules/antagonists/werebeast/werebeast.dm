@@ -1,6 +1,7 @@
  #define BEAST_HOLDER "beast_holder"
 /datum/antagonist/werebeast
 	var/datum/team/werebeast/team
+	var/datum/action/innate/werebeast_communicate/communicate_button
 
 /datum/antagonist/werebeast/host
 	name = "Wwerebeast host"
@@ -27,41 +28,16 @@
 
 	var/death_syncing = FALSE //to prevent death sync loops
 
-/datum/action/innate/beast_form/
-	name = "Beast form"
-	desc = "GRARGH"
 
-	var/datum/team/werebeast/team
-
-
-/datum/action/innate/beast_form/Activate()
-	if(team.active==team.host)
-		team.beast_form()
-	else
-		team.human_form()
-
-/datum/antagonist/werebeast/create_team(datum/team/werebeast/_team)
-	. = ..()
-	team = _team
-
-/datum/antagonist/werebeast/host/create_team(datum/team/werebeast/_team)
-	. = ..()
-	team.host_mind = owner
-	team.host = owner.current
-
-/datum/antagonist/werebeast/beast/create_team(datum/team/werebeast/_team)
-	. = ..()
-	team.beast_mind = owner
-
-/datum/antagonist/werebeast/apply_innate_effects(mob/living/mob_override)
-	var/mob/living/M = mob_override || owner.current
-	RegisterSignal(M, COMSIG_MOB_DEATH, .proc/sync_death)
-
-/datum/antagonist/werebeast/host/remove_innate_effects(mob/living/mob_override)
-	var/mob/living/M = mob_override || owner.current
-	UnregisterSignal(M, COMSIG_MOB_DEATH)
+/datum/antagonist/werebeast/host/greet()
+	to_chat(owner.current, "<span class='userdanger'>You are the [owner.special_role].</span>")
+	to_chat(owner.current, "<span class='userdanger'>Inside you is a ravenous beast just waiting to get out.</span>")
+	to_chat(owner.current, "<span class='userdanger'>You can talk to the beast using the action button, but the beast has control over when they emerge. You'll be able to wrest back control, but only after a time...</span>")
+	to_chat(owner.current, "<span class='userdanger'>You and the beast also have some tasks given to you by your mysterious new employers...</span>")
+	owner.announce_objectives()
 
 /datum/antagonist/werebeast/beast/on_gain()
+	owner.special_role = "Werebeast"
 	.=..()	
 	SSticker.mode.werebeast_beasts += owner
 	team.update_bodies()
@@ -69,9 +45,17 @@
 	START_PROCESSING(SSprocessing, team)
 
 /datum/antagonist/werebeast/host/on_gain()
-	.=..()
 	SSticker.mode.werebeast_hosts += owner
+	owner.special_role = "Werebeast host"
+	.=..()
 
+/datum/antagonist/werebeast/create_team(datum/team/werebeast/_team)
+	. = ..()
+	team = _team
+
+/datum/antagonist/werebeast/host/create_team(datum/team/werebeast/_team)
+	. = ..()
+	team.host = owner.current
 
 /datum/antagonist/werebeast/proc/sync_death(mob/source, var/gibbed)
 	if(team.death_syncing)
@@ -80,7 +64,7 @@
 
 	for(var/_M in team.members)
 		var/datum/mind/M = _M
-		if (M != owner)
+		if (M != owner) //don't kill them twice
 			if(M.current)
 				if(gibbed)
 					M.current.gib()
@@ -88,19 +72,6 @@
 					M.current.death()
 
 	team.death_syncing = FALSE
-
-/datum/antagonist/werebeast/host/apply_innate_effects(mob/living/mob_override)
-	.=..()
-	var/mob/living/M = mob_override || owner.current
-	if(!beast_button)
-		beast_button = new
-		beast_button.team = team
-	beast_button.Grant(M)
-
-/datum/antagonist/werebeast/host/remove_innate_effects(mob/living/mob_override)
-	.=..()
-	var/mob/living/M = mob_override || owner.current
-	beast_button.Remove(M)
 
 /datum/team/werebeast/proc/switch_form(mob/living/_active, mob/living/_stored)
 	if(stored)
@@ -139,6 +110,11 @@
 /datum/team/werebeast/proc/generate_beast()
 	var/mob/living/old = beast_mind.current
 	beast = new beast_type(beast_holder)
+	beast.real_name = "THE BEAST"
+	beast.name = "THE BEAST"
+	beast.move_force = MOVE_FORCE_EXTREMELY_STRONG
+	beast.maxHealth = 100
+	beast.health = 100
 	beast_mind.transfer_to(beast, TRUE)
 	if(old)
 		qdel(old)
