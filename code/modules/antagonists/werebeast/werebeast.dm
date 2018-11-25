@@ -1,4 +1,3 @@
- #define BEAST_HOLDER "beast_holder"
 /datum/antagonist/werebeast
 	var/datum/team/werebeast/team
 	var/datum/action/innate/werebeast_communicate/communicate_button
@@ -7,11 +6,13 @@
 	name = "Wwerebeast host"
 	antagpanel_category = "Werewolves"
 
-	var/datum/action/innate/beast_form/beast_button
+	var/datum/action/innate/host_form/host_button
 
 /datum/antagonist/werebeast/beast
 	name = "Werebeast"
 	antagpanel_category = "Werewolves"
+
+	var/datum/action/innate/beast_form/beast_button
 
 /datum/team/werebeast
 	var/beast_type = /mob/living/simple_animal/hostile/gorilla
@@ -26,7 +27,11 @@
 	var/mob/living/stored
 	var/mob/living/active
 
+	var/last_switch = 0
 	var/death_syncing = FALSE //to prevent death sync loops
+	var/sent_control_message = FALSE //prevents spamming "you can take control" every second
+	var/sent_forced_message = 0 //this is a number as I want to send multiple levels of increasingly aggravated warning
+
 
 
 /datum/antagonist/werebeast/host/greet()
@@ -41,7 +46,7 @@
 	.=..()	
 	SSticker.mode.werebeast_beasts += owner
 	team.update_bodies()
-	team.human_form()
+	team.host_form()
 	START_PROCESSING(SSprocessing, team)
 
 /datum/antagonist/werebeast/host/on_gain()
@@ -73,7 +78,11 @@
 
 	team.death_syncing = FALSE
 
-/datum/team/werebeast/proc/switch_form(mob/living/_active, mob/living/_stored)
+/datum/antagonist/werebeast/host/on_body_transfer(var/mob/living/old_current, var/mob/living/current)
+	. = ..()	
+	team.update_bodies()
+
+/datum/team/werebeast/proc/set_form(mob/living/_active, mob/living/_stored)
 	if(stored)
 		stored.remove_trait(TRAIT_NOBREATH, BEAST_HOLDER)
 
@@ -88,10 +97,16 @@
 	stored.add_trait(TRAIT_NOBREATH, BEAST_HOLDER) //even with the revives, suffocating gives an annoying status effect and a bad moodlet
 
 /datum/team/werebeast/proc/beast_form()
-	switch_form(beast, host)
+	set_form(beast, host)
 
-/datum/team/werebeast/proc/human_form()
-	switch_form(host, beast)
+/datum/team/werebeast/proc/host_form()
+	set_form(host, beast)
+
+/datum/team/werebeast/proc/switch_form()
+	if(host == active)
+		beast_form()
+	else
+		host_form()
 
 /datum/team/werebeast/proc/update_bodies()
 	host = host_mind.current
@@ -102,7 +117,7 @@
 			beast_holder.forceMove(host)
 		if(!beast)
 			generate_beast()
-		human_form()
+		host_form()
 	else
 		stack_trace("Werebeast had no host")
 		
@@ -119,11 +134,32 @@
 	if(old)
 		qdel(old)
 
-/datum/antagonist/werebeast/host/on_body_transfer(var/mob/living/old_current, var/mob/living/current)
-	. = ..()	
-	team.update_bodies()
+
+/datum/team/werebeast/proc/reset_timers()
+	last_switch = world.time
+	sent_control_message = FALSE
+	sent_forced_message = 0
 
 /datum/team/werebeast/process()
 	if(active && active.stat != DEAD)
 		if(stored)
 			stored.revive(TRUE)
+			if(((last_switch + WEREBEAST_TRANSFORMATION_COOLDOWN) < world.time)&&!sent_control_message)
+				to_chat(stored, "<span class = userdanger>You can now take control!</span>")
+				sent_control_message = TRUE
+
+			if(((last_switch + WEREBEAST_WARNING_TIME) < world.time)&&sent_forced_message==0)
+				to_chat(active, "<span class = userdanger>You start to feel your control slipping away...</span>")
+				sent_forced_message = 1
+				to_chat(stored, "<span class = userdanger>Your fleshy container grows weak, and soon you will be forced into existence!</span>")
+			else if(((last_switch + WEREBEAST_URGENT_WARNING_TIME) < world.time)&&sent_forced_message==1)
+				to_chat(active, "<span class = userdanger>You are about to transform! Hide so the mobs don't know who you are!</span>")
+				to_chat(stored, "<span class = userdanger>You are about to be forcibly released! Prepare yourself!</span>")
+				sent_forced_message = 2
+
+			if((last_switch + WEREBEAST_FORCED_TRANSFORMATION_TIME) < world.time)
+				switch_form()
+				reset_timers()
+				to_chat(active, "<span class = userdanger>You are ripped out of your hiding place into the cold, hard world.</span>")
+				to_chat(stored, "<span class = userdanger>Your time in this world has run out, but only for now...</span>")
+	

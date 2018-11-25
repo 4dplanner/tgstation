@@ -17,11 +17,23 @@
 /datum/antagonist/werebeast/host/apply_innate_effects(mob/living/mob_override)
 	.=..()
 	var/mob/living/M = mob_override || owner.current
+	host_button = new
+	host_button.team = team
+	host_button.Grant(M)
+
+/datum/antagonist/werebeast/host/remove_innate_effects(mob/living/mob_override)
+	.=..()
+	var/mob/living/M = mob_override || owner.current
+	host_button.Remove(M)
+
+/datum/antagonist/werebeast/beast/apply_innate_effects(mob/living/mob_override)
+	.=..()
+	var/mob/living/M = mob_override || owner.current
 	beast_button = new
 	beast_button.team = team
 	beast_button.Grant(M)
 
-/datum/antagonist/werebeast/host/remove_innate_effects(mob/living/mob_override)
+/datum/antagonist/werebeast/beast/remove_innate_effects(mob/living/mob_override)
 	.=..()
 	var/mob/living/M = mob_override || owner.current
 	beast_button.Remove(M)

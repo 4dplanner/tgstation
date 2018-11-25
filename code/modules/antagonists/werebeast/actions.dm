@@ -1,4 +1,3 @@
-
 /proc/werebeast_communicate(var/other_name, var/mob/living/me, var/mob/living/other)
 	var/input = stripped_input(me, "Please enter a message to tell the [other_name].", "Werebeast", "")
 	if(!input)
@@ -36,7 +35,22 @@
 
 
 /datum/action/innate/beast_form/Activate()
-	if(team.active==team.host)
-		team.beast_form()
-	else
-		team.human_form()
+	if(team.active == team.beast)
+		return
+	if((team.last_switch + WEREBEAST_TRANSFORMATION_COOLDOWN) < world.time)
+		team.beast_form()	
+		team.reset_timers()
+
+/datum/action/innate/host_form/
+	name = "Human form"
+	desc = "ehem"
+
+	var/datum/team/werebeast/team
+
+/datum/action/innate/host_form/Activate()
+	if(team.active == team.host)
+		return
+	if((team.last_switch + WEREBEAST_TRANSFORMATION_COOLDOWN) < world.time)
+		team.host_form()	
+		team.reset_timers()
+		team.last_switch = world.time
