@@ -277,7 +277,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	lefthand_file = 'icons/mob/inhands/equipment/shields_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/shields_righthand.dmi'
 	force = 2
-	throwforce = 20 //This is never used on mobs since this has a 100% embed chance.
+	throwforce = 20 //20 + 2 (WEIGHT_CLASS_SMALL) * 4 (EMBEDDED_IMPACT_PAIN_MULTIPLIER) = 28 damage on hit due to guaranteed embedding
 	throw_speed = 4
 	embedding = list("embedded_pain_multiplier" = 4, "embed_chance" = 100, "embedded_fall_chance" = 0)
 	w_class = WEIGHT_CLASS_SMALL
@@ -285,6 +285,16 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	materials = list(MAT_METAL=500, MAT_GLASS=500)
 	resistance_flags = FIRE_PROOF
 
+/obj/item/throwing_star/magspear
+	name = "magnetic spear"
+	desc = "A reusable spear that is typically loaded into kinetic spearguns."
+	icon = 'icons/obj/ammo.dmi'
+	icon_state = "magspear"
+	throwforce = 25 //kills regular carps in one hit
+	force = 10
+	throw_range = 0 //throwing these invalidates the speargun
+	attack_verb = list("stabbed", "ripped", "gored", "impaled")
+	embedding = list("embedded_pain_multiplier" = 8, "embed_chance" = 100, "embedded_fall_chance" = 0, "embedded_impact_pain_multiplier" = 15) //55 damage+embed on hit
 
 /obj/item/switchblade
 	name = "switchblade"
@@ -450,6 +460,11 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	throw_range = 2
 	attack_verb = list("busted")
 
+/obj/item/statuebust/hippocratic
+	name = "hippocrates bust"
+	desc = "A bust of the famous Greek physician Hippocrates of Kos, often referred to as the father of western medicine."
+	icon_state = "hippocratic"
+
 /obj/item/tailclub
 	name = "tail club"
 	desc = "For the beating to death of lizards with their own tails."
@@ -613,16 +628,12 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 		var/mob/living/carbon/human/L = M
 		if(L && L.dna && L.dna.species)
 			L.dna.species.stop_wagging_tail(M)
-	if(user.a_intent != INTENT_HARM && ((user.zone_selected == BODY_ZONE_PRECISE_MOUTH) || (user.zone_selected == BODY_ZONE_PRECISE_EYES) || (user.zone_selected == BODY_ZONE_HEAD)))
-		user.do_attack_animation(M)
-		playsound(M, 'sound/weapons/slap.ogg', 50, 1, -1)
-		user.visible_message("<span class='danger'>[user] slaps [M]!</span>",
-		"<span class='notice'>You slap [M]!</span>",\
-		"You hear a slap.")
-		return
-	else
-		..()
-
+	user.do_attack_animation(M)
+	playsound(M, 'sound/weapons/slap.ogg', 50, 1, -1)
+	user.visible_message("<span class='danger'>[user] slaps [M]!</span>",
+	"<span class='notice'>You slap [M]!</span>",\
+	"You hear a slap.")
+	return
 /obj/item/proc/can_trigger_gun(mob/living/user)
 	if(!user.can_use_guns(src))
 		return FALSE
