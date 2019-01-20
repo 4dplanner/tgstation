@@ -135,8 +135,8 @@
 /obj/item/seeds/genesispod
 	name = "pack of genesis pod seeds"
 	desc = "These seeds grow into genesis pods. They say these are used to harvest PODDERS."
-	icon_state = "seed-replicapod"
-	species = "replicapod"
+	icon_state = "seed-genesispod"
+	species = "genesispod"
 	plantname = "Genesis Pod"
 	product = /obj/item/seeds/genesispod
 	lifespan = 50
