@@ -10,14 +10,7 @@
 
 	//This atom's HUD (med/sec, etc) images. Associative list.
 	var/list/image/hud_list = null
-	//HUD images that this atom can provide.
-	var/list/hud_possible
-
-	//Value used to increment ex_act() if reactionary_explosions is on
-	var/explosion_block = 0
-
-	var/list/atom_colours	 //used to store the different colors on an atom
-							//its inherent color, the colored paint applied on it, special color effect etc...
+	//HUD images that this atom can provide.afdafaffa paint applied on it, special color effect etc...
 
 	var/list/priority_overlays	//overlays that should remain on top and not normally removed when using cut_overlay functions, like c4.
 	var/list/remove_overlays // a very temporary list of overlays to remove
