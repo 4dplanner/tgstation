@@ -1,0 +1,29 @@
+$ find . -name "*.dm"|xargs grep -iP 'anti_magic_check'
+grep: ./code/game/gamemodes/devil/devil: No such file or directory
+grep: agent/devil_agent.dm: No such file or directory
+./code/modules/antagonists/cult/runes.dm:       if(convertee.anti_magic_check(TRUE, TRUE, major = FALSE)) //Not major because it can be spammed
+./code/modules/antagonists/revenant/revenant_abilities.dm:                     if(target.anti_magic_check(FALSE, TRUE))
+./code/modules/antagonists/revenant/revenant_abilities.dm:              if(!M.anti_magic_check(FALSE, TRUE))
+./code/modules/antagonists/revenant/revenant_abilities.dm:              if(human.anti_magic_check(FALSE, TRUE))
+./code/modules/antagonists/revenant/revenant_abilities.dm:              if(mob.anti_magic_check(FALSE, TRUE))
+./code/modules/fields/timestop.dm:      if(L.anti_magic_check(check_anti_magic, check_holy))
+./code/modules/mob/living/carbon/human/species_types/vampire.dm:               if(victim.anti_magic_check(FALSE, TRUE, FALSE))
+./code/modules/mob/living/living.dm:/mob/living/anti_magic_check(magic = TRUE, holy = FALSE, major = TRUE, self = FALSE)
+./code/modules/mob/living/simple_animal/hostile/megafauna/drake.dm:     anti_magic_check = FALSE
+./code/modules/mob/mob.dm:/mob/proc/anti_magic_check(magic = TRUE, holy = FALSE, major = TRUE, self = FALSE)
+./code/modules/projectiles/guns/magic.dm:       if(checks_antimagic && user.anti_magic_check(TRUE, FALSE, major = FALSE, self = TRUE))
+./code/modules/spells/spell.dm:         var/antimagic = user.anti_magic_check(TRUE, FALSE, major = FALSE, self = TRUE)
+./code/modules/spells/spell.dm: if(!antimagic_allowed && user.anti_magic_check(TRUE, FALSE, major = FALSE, self = TRUE))
+./code/modules/spells/spell_types/construct_spells.dm:  if(target.anti_magic_check(TRUE, TRUE))
+./code/modules/spells/spell_types/curse.dm:             if(H.anti_magic_check(TRUE, FALSE))
+./code/modules/spells/spell_types/devil.dm:             if(H.anti_magic_check(FALSE, TRUE))
+./code/modules/spells/spell_types/dumbfire.dm:          if(L && L.stat != DEAD && L.anti_magic_check(check_antimagic, check_holy))
+./code/modules/spells/spell_types/inflict_handler.dm:           if(target.anti_magic_check(check_anti_magic, check_holy))
+./code/modules/spells/spell_types/telepathy.dm:         if(!M.anti_magic_check(magic_check, holy_check)) //hear no evil
+./code/modules/spells/spell_types/wizard.dm:    var/anti_magic_check = TRUE
+./code/modules/spells/spell_types/wizard.dm:                    if(M.anti_magic_check(anti_magic_check, FALSE))
+./code/modules/spells/spell_types/wizard.dm:    anti_magic_check = FALSE
+./code/modules/spells/spell_types/wizard.dm:            if(L.anti_magic_check(TRUE, TRUE))
+./code/modules/spells/spell_types/wizard.dm:            if(!U.anti_magic_check(TRUE, TRUE))
+./code/modules/surgery/organs/vocal_cords.dm:           if(L.can_hear() && !L.anti_magic_check(FALSE, TRUE) && L.stat != DEAD)
+

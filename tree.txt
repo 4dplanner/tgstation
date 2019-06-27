@@ -1,0 +1,13 @@
+Design docs for TREE.
+
+plant central node - becomes the TRUNK
+grows WOOD around it
+Grows LEAVES around the wood
+
+Mutations:
+Grows ROOTS (patches up the floor around it)
+Grows FRUIT on leaves (plant a seed in it)
+Grows LIGHT
+Bluespace roots
+Ventcrawl roots?
+

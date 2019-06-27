@@ -81,7 +81,7 @@
 					<input value={{sheets}} placeholder='###' class="number"/>
 				</section>
 				<section class="cell" align='right'>
-					<ui-button class='center' grid action='Release' state={{(amount >= 1) ? null : 'disabled'}} params='{ "id" : {{id}}, "sheets" : {{sheets}} }' >
+					<ui-button class='center' grid action='Release' state={{(amount >= 1) ? null : 'disabled'}} params='{ "mat_ref" : {{mat_ref}}, "sheets" : {{sheets}} }' >
 						Release
 					</ui-button>
 				</section>

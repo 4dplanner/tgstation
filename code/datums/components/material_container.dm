@@ -222,7 +222,7 @@
 		if(!materials[req_mat]) //Do we have the resource?
 			to_chat(world, "cannot afford, mat not available.")
 			return FALSE //Can't afford it
-		var/amount_required = mats[req_mat] * multiplier
+		var/amount_required = mats[x] * multiplier
 		if(!(materials[req_mat] >= amount_required)) // do we have enough of the resource?
 			to_chat(world, "cannot afford, not enough mats")
 			return FALSE //Can't afford it
