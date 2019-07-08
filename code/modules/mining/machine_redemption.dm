@@ -229,7 +229,7 @@
 			var/sheet_amount = amount / MINERAL_MATERIAL_AMOUNT
 			var/ref = REF(M)
 			world.log << "attempting to save ref  [ref]"
-			data["materials"] += list(list("name" = M.name, "mat_ref" = ref, "amount" = sheet_amount, "value" = ore_values[M.id]))
+			data["materials"] += list(list("name" = M.name, "id" = ref, "amount" = sheet_amount, "value" = ore_values[M.id]))
 
 		data["alloys"] = list()
 		for(var/v in stored_research.researched_designs)
@@ -287,7 +287,7 @@
 			else if(!check_access(inserted_id) && !allowed(usr)) //Check the ID inside, otherwise check the user
 				to_chat(usr, "<span class='warning'>Required access not found.</span>")
 			else
-				var/datum/material/mat = locate(params["mat_ref"])
+				var/datum/material/mat = locate(params["id"])
 
 				var/amount = mat_container.materials[mat]
 				if(!amount)
