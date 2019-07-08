@@ -228,7 +228,6 @@
 			var/amount = mat_container.materials[M]
 			var/sheet_amount = amount / MINERAL_MATERIAL_AMOUNT
 			var/ref = REF(M)
-			world.log << "attempting to save ref  [ref]"
 			data["materials"] += list(list("name" = M.name, "id" = ref, "amount" = sheet_amount, "value" = ore_values[M.id]))
 
 		data["alloys"] = list()
@@ -280,8 +279,8 @@
 			return TRUE
 		if("Release")
 			if(!mat_container)
-				to_chat(world, "DEBUG: quitting because no mat container")
 				return
+
 			if(materials.on_hold())
 				to_chat(usr, "<span class='warning'>Mineral access is on hold, please contact the quartermaster.</span>")
 			else if(!check_access(inserted_id) && !allowed(usr)) //Check the ID inside, otherwise check the user
@@ -291,13 +290,11 @@
 
 				var/amount = mat_container.materials[mat]
 				if(!amount)
-					to_chat(world, "DEBUG: quitting because no amount for ref [params["ref"]]")
 					return
 
 				var/stored_amount = amount / MINERAL_MATERIAL_AMOUNT
 
 				if(!stored_amount)
-					to_chat(world, "DEBUG: quitting because no stored_amount")
 					return
 
 				var/desired = 0
