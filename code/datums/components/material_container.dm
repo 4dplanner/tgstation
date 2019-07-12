@@ -41,7 +41,7 @@
 	RegisterSignal(parent, COMSIG_PARENT_EXAMINE, .proc/OnExamine)
 
 	for(var/mat in mat_list) //Make the assoc list ref | amount
-		var/datum/material/M = SSmaterials.materials[mat]
+		var/datum/material/M = getmaterialref(mat)
 		materials[M] = 0
 
 /datum/component/material_container/proc/OnExamine(datum/source, mob/user)
@@ -154,7 +154,9 @@
 	return amt
 
 //For inserting an amount of material
-/datum/component/material_container/proc/insert_amount_mat(amt, mat) //Revamped
+/datum/component/material_container/proc/insert_amount_mat(amt, var/datum/material/mat) //Revamped
+	if(!istype(mat))
+		mat = getmaterialref(mat)
 	if(amt > 0 && has_space(amt))
 		var/total_amount_saved = total_amount
 		if(mat)
@@ -168,7 +170,7 @@
 
 /datum/component/material_container/proc/use_amount_mat(amt, var/datum/material/mat) //Revamped
 	if(!istype(mat))
-		mat = SSmaterials.materials[mat]
+		mat = getmaterialref(mat)
 	var/amount = materials[mat]
 	if(mat)
 		if(amount >= amt)
@@ -179,7 +181,7 @@
 
 /datum/component/material_container/proc/transer_amt_to(var/datum/component/material_container/T, amt, var/datum/material/mat) //Revamped
 	if(!istype(mat))
-		mat = SSmaterials.materials[mat]
+		mat = getmaterialref(mat)
 	if((amt==0)||(!T)||(!mat))
 		return FALSE
 	if(amt<0)
@@ -202,7 +204,7 @@
 
 
 //For consuming material
-// mats is the list of materials to use and the corresponding amounts, example: list(M/datum/material/glass =100, datum/material/hematite=200)
+// mats is the list of materials to use and the corresponding amounts, example: list(M/datum/material/glass =100, datum/material/iron=200)
 /datum/component/material_container/proc/use_materials(list/mats, multiplier=1)
 	if(!mats || !length(mats))
 		return FALSE
@@ -212,8 +214,7 @@
 	for(var/x in mats) //Loop through all required materials
 		var/datum/material/req_mat = x
 		if(!istype(req_mat))
-			req_mat = SSmaterials.materials[req_mat] //Get the ref if necesary
-			to_chat(world, "not a ref")
+			req_mat = getmaterialref(req_mat) //Get the ref if necesary
 		if(!materials[req_mat]) //Do we have the resource?
 			return FALSE //Can't afford it
 		var/amount_required = mats[x] * multiplier
@@ -232,15 +233,13 @@
 //For spawning mineral sheets; internal use only
 /datum/component/material_container/proc/retrieve_sheets(sheet_amt, var/datum/material/M, target = null) //Kinda revamped? this is most likely to not work
 	if(!M.sheet_type)
-		to_chat(world, "ass")
 		return 0 //Add greyscale sheet handling here later
 	if(sheet_amt <= 0)
-		to_chat(world, "ass2")
+		to_chat(world, "sheet amount is 0 or lower, yell at 4d")
 		return 0
 
 	if(!target)
 		target = get_turf(parent)
-	to_chat(world, "[materials[M]] [sheet_amt * MINERAL_MATERIAL_AMOUNT]")
 	if(materials[M] < (sheet_amt * MINERAL_MATERIAL_AMOUNT))
 		sheet_amt = round(materials[M] / MINERAL_MATERIAL_AMOUNT)
 	var/count = 0
@@ -253,7 +252,6 @@
 		new M.sheet_type(target, sheet_amt)
 		count += sheet_amt
 		use_amount_mat(sheet_amt * MINERAL_MATERIAL_AMOUNT, M)
-	to_chat(world, "[count]")	
 	return count
 
 /datum/component/material_container/proc/retrieve_all(target = null) //Revamped
@@ -266,20 +264,50 @@
 /datum/component/material_container/proc/has_space(amt = 0)
 	return (total_amount + amt) <= max_amount
 
-/datum/component/material_container/proc/has_materials(list/mats, multiplier=1) //Revamped
+/datum/component/material_container/proc/has_materials(list/mats, multiplier=1) //To check if it's possible to afford something at all
 	if(!mats || !mats.len)
 		return FALSE
 
 	for(var/x in mats) //Loop through all required materials
 		var/datum/material/req_mat = x
 		if(!istype(req_mat))
-			req_mat = SSmaterials.materials[req_mat]
-		if(!materials[req_mat]) //Do we have the resource?
-			return FALSE //Can't afford it
-		var/amount_required = mats[req_mat] * multiplier
-		if(!(materials[req_mat] >= amount_required)) // do we have enough of the resource?
-			return FALSE //Can't afford it
+			if(ispath(req_mat)) //Is this an actual material, or is it a category?
+				req_mat = getmaterialref(req_mat) //Get the ref
+
+			else // Its a category. (For example MAT_CATEGORY_RIGID)
+				if(!has_enough_of_category(req_mat, mats[req_mat], multiplier)) //Do we have enough of this category?
+					return FALSE
+				else
+					continue
+
+		if(!has_enough_of_material(req_mat, mats[req_mat], multiplier))//Not a category, so just check the normal way
+			return FALSE
+
 	return TRUE
+
+/datum/component/material_container/proc/get_categories(list/mats) //Returns just the categories in a recipe.
+	var/list/categories = list()
+	for(var/x in mats) //Loop through all required materials
+		if(!istext(x)) //This means its not a category
+			continue
+		categories += x
+	return categories
+			
+/datum/component/material_container/proc/has_enough_of_material(var/datum/material/req_mat, amount, multiplier=1) //Revamped
+	if(!materials[req_mat]) //Do we have the resource?
+		return FALSE //Can't afford it
+	var/amount_required = amount * multiplier
+	if(materials[req_mat] >= amount_required) // do we have enough of the resource?
+		return TRUE 
+	return FALSE //Can't afford it
+
+/datum/component/material_container/proc/has_enough_of_category(category, amount, multiplier=1) //Revamped
+	for(var/i in SSmaterials.materials_by_category[category])
+		var/datum/material/mat = i
+		if(materials[mat] >= amount) //we have enough
+			return TRUE
+	return FALSE
+
 
 /datum/component/material_container/proc/amount2sheet(amt) //Revamped
 	if(amt >= MINERAL_MATERIAL_AMOUNT)
@@ -305,5 +333,5 @@
 
 /datum/component/material_container/proc/get_material_amount(var/datum/material/mat)  //Revamped
 	if(!istype(mat))
-		mat = SSmaterials.materials[mat]
-	return(materials.[mat])
+		mat = getmaterialref(mat)
+	return(materials[mat])

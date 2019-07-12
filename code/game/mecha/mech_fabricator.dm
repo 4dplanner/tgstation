@@ -29,13 +29,14 @@
 								"H.O.N.K",
 								"Phazon",
 								"Exosuit Equipment",
+								"Exosuit Ammunition",
 								"Cyborg Upgrade Modules",
 								"Misc"
 								)
 
 /obj/machinery/mecha_part_fabricator/Initialize()
     var/datum/component/material_container/materials = AddComponent(/datum/component/material_container,
-     list(/datum/material/hematite, /datum/material/glass, /datum/material/silver, /datum/material/gold, /datum/material/diamond, /datum/material/plasma, /datum/material/uranium, /datum/material/bananium, /datum/material/titanium, /datum/material/bluespace), 0,
+     list(/datum/material/iron, /datum/material/glass, /datum/material/silver, /datum/material/gold, /datum/material/diamond, /datum/material/plasma, /datum/material/uranium, /datum/material/bananium, /datum/material/titanium, /datum/material/bluespace), 0,
         TRUE, /obj/item/stack, CALLBACK(src, .proc/is_insertion_ready), CALLBACK(src, .proc/AfterMaterialInsert))
     materials.precise_insertion = TRUE
     stored_research = new
@@ -66,7 +67,7 @@
 	. = ..()
 	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
 	if(in_range(user, src) || isobserver(user))
-		. += "<span class='notice'>The status display reads: Storing up to <b>[materials.max_amount]</b> material units.<br>Material consumption at <b>[component_coeff*100]%</b>.<br>Build time reduced by <b>[100-time_coeff*100]%</b>.<span>"
+		. += "<span class='notice'>The status display reads: Storing up to <b>[materials.max_amount]</b> material units.<br>Material consumption at <b>[component_coeff*100]%</b>.<br>Build time reduced by <b>[100-time_coeff*100]%</b>.</span>"
 
 /obj/machinery/mecha_part_fabricator/emag_act()
 	if(obj_flags & EMAGGED)
@@ -387,7 +388,6 @@
 	if(href_list["remove_mat"] && href_list["material"])
 		var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
 		var/datum/material/Mat = locate(href_list["material"])
-		to_chat(world, "fucking work [Mat.name]")
 		materials.retrieve_sheets(text2num(href_list["remove_mat"]), Mat)
 
 	updateUsrDialog()

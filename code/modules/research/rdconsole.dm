@@ -52,8 +52,8 @@ Nothing else in the console has ID requirements.
 	research_control = FALSE
 
 /proc/CallMaterialName(ID)
-	if (SSmaterials.materials[ID])
-		var/datum/material/material = SSmaterials.materials[ID]
+	if (getmaterialref(ID))
+		var/datum/material/material = getmaterialref(ID)
 		return material.name
 
 	else if(GLOB.chemical_reagents_list[ID])
@@ -117,22 +117,22 @@ Nothing else in the console has ID requirements.
 	if(istype(D, /obj/item/disk))
 		if(istype(D, /obj/item/disk/tech_disk))
 			if(t_disk)
-				to_chat(user, "<span class='danger'>A technology disk is already loaded!</span>")
+				to_chat(user, "<span class='warning'>A technology disk is already loaded!</span>")
 				return
 			if(!user.transferItemToLoc(D, src))
-				to_chat(user, "<span class='danger'>[D] is stuck to your hand!</span>")
+				to_chat(user, "<span class='warning'>[D] is stuck to your hand!</span>")
 				return
 			t_disk = D
 		else if (istype(D, /obj/item/disk/design_disk))
 			if(d_disk)
-				to_chat(user, "<span class='danger'>A design disk is already loaded!</span>")
+				to_chat(user, "<span class='warning'>A design disk is already loaded!</span>")
 				return
 			if(!user.transferItemToLoc(D, src))
-				to_chat(user, "<span class='danger'>[D] is stuck to your hand!</span>")
+				to_chat(user, "<span class='warning'>[D] is stuck to your hand!</span>")
 				return
 			d_disk = D
 		else
-			to_chat(user, "<span class='danger'>Machine cannot accept disks in that format.</span>")
+			to_chat(user, "<span class='warning'>Machine cannot accept disks in that format.</span>")
 			return
 		to_chat(user, "<span class='notice'>You insert [D] into \the [src]!</span>")
 	else if(!(linked_destroy && linked_destroy.busy) && !(linked_lathe && linked_lathe.busy) && !(linked_imprinter && linked_imprinter.busy))
@@ -167,7 +167,9 @@ Nothing else in the console has ID requirements.
 					var/obj/item/card/id/ID = I.GetID()
 					if(istype(ID))
 						logname = "User: [ID.registered_name]"
-			stored_research.research_logs += "[logname] researched node id [id] with cost [json_encode(price)]."
+			var/i = stored_research.research_logs.len
+			stored_research.research_logs += null
+			stored_research.research_logs[++i] = list(TN.display_name, price["General Research"], logname, "[get_area(src)] ([src.x],[src.y],[src.z])")
 			return TRUE
 		else
 			say("Failed to research node: Internal database error!")
@@ -1020,7 +1022,7 @@ Nothing else in the console has ID requirements.
 				D.category -= "Imported"
 			else
 				for(var/x in D.materials)
-					if( !(x in list(/datum/material/hematite, /datum/material/glass)))
+					if( !(x in list(/datum/material/iron, /datum/material/glass)))
 						autolathe_friendly = FALSE
 						D.category -= "Imported"
 

@@ -33,7 +33,7 @@
 	if(!wielded || !user)
 		return
 	wielded = 0
-	if(force_unwielded)
+	if(!isnull(force_unwielded))
 		force = force_unwielded
 	var/sf = findtext(name," (Wielded)")
 	if(sf)
@@ -466,7 +466,7 @@
 	throw_speed = 4
 	embedding = list("embedded_impact_pain_multiplier" = 3)
 	armour_penetration = 10
-	materials = list(/datum/material/hematite=1150, /datum/material/glass=2075)
+	materials = list(/datum/material/iron=1150, /datum/material/glass=2075)
 	hitsound = 'sound/weapons/bladeslice.ogg'
 	attack_verb = list("attacked", "poked", "jabbed", "torn", "gored")
 	sharpness = IS_SHARP
@@ -550,6 +550,8 @@
 
 /obj/item/twohanded/spear/explosive/afterattack(atom/movable/AM, mob/user, proximity)
 	. = ..()
+	if(!proximity)
+		return
 	if(wielded)
 		user.say("[war_cry]", forced="spear warcry")
 		explosive.forceMove(AM)
@@ -570,7 +572,7 @@
 	throwforce = 13
 	throw_speed = 2
 	throw_range = 4
-	materials = list(/datum/material/hematite=13000)
+	materials = list(/datum/material/iron=13000)
 	attack_verb = list("sawed", "torn", "cut", "chopped", "diced")
 	hitsound = "swing_hit"
 	sharpness = IS_SHARP
@@ -718,7 +720,7 @@
 
 /obj/item/twohanded/pitchfork/demonic/attack(mob/target, mob/living/carbon/human/user)
 	if(user.mind && user.owns_soul() && !is_devil(user))
-		to_chat(user, "<span class ='warning'>[src] burns in your hands.</span>")
+		to_chat(user, "<span class='warning'>[src] burns in your hands.</span>")
 		user.apply_damage(rand(force/2, force), BURN, pick(BODY_ZONE_L_ARM, BODY_ZONE_R_ARM))
 	..()
 
