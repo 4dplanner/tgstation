@@ -42,12 +42,6 @@
 		selected_biome.generate_turf(T)
 		CHECK_TICK
 
-<<<<<<< HEAD
-/datum/map_generator/jungle_generator/proc/get_perlin_noise(id, x, y)
-	return clamp((text2num(rustg_perlin_noise_get_at_coordinates("[id]", "[x/65]", "[y/65]")) + 1) / 2, 0, 1)
-
-=======
->>>>>>> fcae8be... done
 /turf/open/genturf
 	name = "ungenerated turf"
 	desc = "If you see this, and you're not a ghost, yell at coders"
